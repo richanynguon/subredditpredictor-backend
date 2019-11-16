@@ -6,8 +6,6 @@ describe("correctly importing server file into index", () => {
 		return request(server)
 			.get("/")
 			.expect(200)
-			.then(res => {
-				expect(res.body).toEqual({ message: "Server is running" });
-			});
-	});
+      .expect({ message: "Server is running" });
+  });
 });
