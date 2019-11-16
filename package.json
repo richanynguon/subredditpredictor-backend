@@ -6,7 +6,9 @@
   "scripts": {
     "server": "nodemon index.js",
     "start": "node index.js",
-    "test": "cross-env DB_ENV=testing jest --watchAll"
+    "test": "cross-env NODE_ENV=testing jest --watchAll",
+    "updateDevDB": "npx knex migrate:latest --env development && npx knex seed:run --env development",
+    "updateTestDB": "npx knex migrate:latest --env testing && npx knex seed:run --env testing"
   },
   "repository": {
     "type": "git",
