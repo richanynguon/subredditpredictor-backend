@@ -1,20 +1,25 @@
 const bcrypt = require('bcryptjs');
 const authRouter = require('express').Router();
 // Helpers
-const globalHelpers = require('../global/globalHelpers');
-const authHelpers = require('../auth/authHelpers');
+const { handleErrors } = require('../global/globalHelpers');
+const {
+  findUser,
+  addUser,
+  validateLoginBody,
+  generateJWT
+} = require('../auth/authHelpers');
 // Endpoints
-authRouter.post('/login', (req, res, next) => {
+authRouter.post('/login', validateLoginBody, (req, res, next) => {
   const { username, password } = req.body;
-  authHelpers.findOne({ username }).then(user => {
+  findUser({ username }).then(user => {
     if (!user || !user.password) {
-      next({ status: 400, message: "This user does not exist!" });
+      next({ status: 404, message: "This user does not exist!" });
     } else {
       const isValidPassword = bcrypt.compareSync(password, user.password);
       if (!isValidPassword) {
         next({ status: 403, message: "Invalid credentials" });
       } else {
-        const token = authHelpers.generateJWT(user);
+        const token = generateJWT(user);
         res.status(200).json({
           id: user.id,
           token
@@ -24,6 +29,17 @@ authRouter.post('/login', (req, res, next) => {
   }).catch(next);
 });
 
-globalHelpers.handleErrors('authRouter', authRouter);
+authRouter.post('/register', validateLoginBody, (req, res, next) => {
+  const { username, password } = req.body;
+  addUser({ username, password }).then(user => {
+    if (!user) {
+      next({ message: "User could not be added!" })
+    } else {
+      res.status(201).json(user);
+    }
+  }).catch(next);
+});
+
+handleErrors('authRouter', authRouter);
 
 module.exports = authRouter;

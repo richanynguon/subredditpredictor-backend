@@ -26,7 +26,7 @@ const validateLoginBody = (req, res, next) => {
 }
 
 // User Model
-const findAll = (filter) => {
+const findUsers = (filter) => {
   if (!filter) {
     return db(users).select('id', 'username');
   } else {
@@ -34,19 +34,19 @@ const findAll = (filter) => {
   }
 }
 
-const findOne = (filter) => {
+const findUser = (filter) => {
   return db(users).where(filter).first();
 }
 
-const add = (newUser) => {
+const addUser = (newUser) => {
   return db(users).insert(newUser).then((ids) => findOne({ id: ids[0] }));
 }
 
-const update = (changes, id) => {
+const updateUser = (changes, id) => {
   return db(users).where({ id }).update(changes).then(() => findOne({ id }));
 }
 
-const remove = (id) => {
+const removeUser = (id) => {
   return db(users).where({ id }).del();
 }
 
@@ -54,9 +54,9 @@ module.exports = {
   generateJWT,
   validateLoginBody,
   // Model
-  findAll,
-  findOne,
-  add,
-  update,
-  remove
+  findUsers,
+  findUser,
+  addUser,
+  updateUser,
+  removeUser
 };
