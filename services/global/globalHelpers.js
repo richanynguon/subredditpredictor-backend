@@ -1,5 +1,6 @@
 const config = require('../../config');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const logger = (req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} to ${req.url}`);
@@ -39,7 +40,7 @@ const objectToQueryString = (obj) => {
   return '?' + Object.keys(obj).reduce((a, k) => [...a, k + '=' + encodeURIComponent(obj[k])], []).join('&');
 }
 
-const authorizeRedditAccess = () => {
+const authorizeRedditAccess = (isMobile = false) => {
   const options = {
     client_id: config.redditClientId,
     response_type: 'code',
@@ -49,7 +50,7 @@ const authorizeRedditAccess = () => {
     scope: 'submit mysubreddits' // OR 'submit,mysubreddits'
     //identity, edit, flair, history, modconfig, modflair, modlog, modposts, modwiki, mysubreddits, privatemessages, read, report, save, submit, subscribe, vote, wikiedit, wikiread
   }
-  return 'https://www.reddit.com/api/v1/authorize' + objectToQueryString(options);
+  return 'https://www.reddit.com/api/v1/authorize' + (isMobile ? '.compact' : '') + objectToQueryString(options);
 }
 
 module.exports = {
