@@ -1,5 +1,5 @@
 // Update with your config settings.
-const { pgdburl } = require('./config').pgdburl
+const { pgdburl } = require('./config');
 module.exports = {
 	development: {
 		client: "sqlite3",
