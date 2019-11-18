@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
+const db = require("../../database/db-config");
+const users = 'users';
 
+// Helpers
 const generateJWT = user => {
 	const payload = {
 		subject: user.id,
@@ -11,4 +14,49 @@ const generateJWT = user => {
 	return jwt.sign(payload, process.env.TOKENSECRET, options);
 };
 
-module.exports = { generateJWT };
+// Middleware
+const validateLoginBody = (req, res, next) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    next({ status: 400, message: 'Missing required fields!' });
+  } else {
+    req.body = { username, password };
+    next();
+  }
+}
+
+// User Model
+const findUsers = (filter) => {
+  if (!filter) {
+    return db(users).select('id', 'username');
+  } else {
+    return db(users).where(filter).select('id', 'username');
+  }
+}
+
+const findUser = (filter) => {
+  return db(users).where(filter).first();
+}
+
+const addUser = (newUser) => {
+  return db(users).insert(newUser).then((ids) => findOne({ id: ids[0] }));
+}
+
+const updateUser = (changes, id) => {
+  return db(users).where({ id }).update(changes).then(() => findOne({ id }));
+}
+
+const removeUser = (id) => {
+  return db(users).where({ id }).del();
+}
+
+module.exports = {
+  generateJWT,
+  validateLoginBody,
+  // Model
+  findUsers,
+  findUser,
+  addUser,
+  updateUser,
+  removeUser
+};
