@@ -1,5 +1,5 @@
 // Update with your config settings.
-
+const { pgdburl } = require('./config').pgdburl
 module.exports = {
 	development: {
 		client: "sqlite3",
@@ -41,7 +41,7 @@ module.exports = {
 
 	production: {
 		client: "pg",
-		connection: process.env.DATABASE_URL,
+		connection: pgdburl,
 		migrations: {
 			directory: "./database/migrations"
 		},
